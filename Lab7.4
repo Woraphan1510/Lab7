@@ -1,0 +1,49 @@
+import RPi.GPIO as GPIO
+import time
+import drivers
+from time import sleep
+
+display = drivers.Lcd()
+display.lcd_clear()
+SW1  = 27  
+SW2  = 17
+lcd_position = 0
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(SW1, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(SW2, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.add_event_detect(SW1, GPIO.FALLING)
+GPIO.add_event_detect(SW2, GPIO.FALLING)
+
+try:
+    while True:
+        if GPIO.event_detected(SW1):
+            lcd_position += 1
+            print(f"SW1 Pressed : {lcd_position}")
+        elif GPIO.event_detected(SW2): 
+            a = False
+            GPIO.remove_event_detect(SW1)
+            GPIO.remove_event_detect(SW2)
+            display.lcd_clear()
+            GPIO.cleanup()
+            print("\nBye...")
+            time.sleep(0.3)
+        if (lcd_position == 1):
+            display.lcd_display_string("Woraphan Rabiab",1)
+            display.lcd_display_string("116510400082-3",2)
+            time.sleep(0.3)
+        if (lcd_position == 2):
+            display.lcd_display_string("Jakkrit Khumwong",1)
+            display.lcd_display_string("116510400272-0",2)
+            time.sleep(0.3)
+        if (lcd_position == 3):
+            display.lcd_display_string("Chayanit Yoosri",1)
+            display.lcd_display_string("116510462015-8",2)
+            lcd_position = 0
+            time.sleep(0.3)
+
+except KeyboardInterrupt:
+    GPIO.remove_event_detect(SW1)
+    GPIO.remove_event_detect(SW2)
+    display.lcd_clear()
+    GPIO.cleanup()
+    print("\nBye...")
